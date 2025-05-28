@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Угадай число вместе</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <h2>Чат</h2>
+    <div id="chat" style="height:200px; overflow-y:auto; border:1px solid #ccc;"></div>
+    <input type="text" id="messageInput" placeholder="Введите сообщение..." />
+    <button onclick="sendMessage()">Отправить</button>
+
+    <h2>Вопрос к числу</h2>
+    <input type="text" id="questionInput" placeholder="Введите логический вопрос..." />
+    <button onclick="askQuestion()">Спросить</button>
+
+    <script>
+        const socket = io();
+
+        socket.on('message', msg => {
+            const chat = document.getElementById('chat');
+            chat.innerHTML += `<div><b>Игрок:</b> ${msg}</div>`;
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const msg = input.value.trim();
+            if (msg) {
+                socket.send(msg);
+                input.value = '';
+            }
+        }
+
+        async function askQuestion() {
+            const input = document.getElementById('questionInput');
+            const question = input.value.trim();
+            if (!question) return;
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ question })
+            });
+            const data = await response.json();
+            document.getElementById('chat').innerHTML += `<div><b>Вы:</b> ${question}</div>`;
+            document.getElementById('chat').innerHTML += `<div><b>Система:</b> ${data.answer}</div>`;
+            input.value = '';
+        }
+    </script>
+</body>
+</html>
