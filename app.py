@@ -5,6 +5,8 @@ import re
 import string
 import json
 import os
+import eventlet
+eventlet.monkey_patch()
 
 app = Flask(__name__)
 CORS(app)
@@ -64,4 +66,4 @@ def handle_message(msg):
     send(msg, broadcast=True)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    socketio.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
