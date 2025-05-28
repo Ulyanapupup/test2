@@ -4,6 +4,7 @@ from flask_socketio import SocketIO, send, emit
 import re
 import string
 import json
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -63,4 +64,4 @@ def handle_message(msg):
     send(msg, broadcast=True)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
